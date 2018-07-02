@@ -12,6 +12,7 @@ find_package(FixedJSON 0.1 REQUIRED)
 find_package(DevToolsLog 0.1 REQUIRED)
 find_package(OSDevTools 0.1 REQUIRED)
 find_package(UtilTime 0.1 REQUIRED)
+find_package(GTKUtils 0.1 REQUIRED)
 find_package(Boost 0.1 REQUIRED COMPONENTS system thread)
 find_package(WEBSOCKETPP 0.6.0 REQUIRED)
 find_package(OpenSSL REQUIRED)
@@ -119,10 +120,36 @@ set_property(TARGET CEFBaseAppCore PROPERTY PUBLIC_HEADER
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseThread.h
 )
 
+add_library(CEFBaseAppDefaults STATIC
+        include/CefBaseDefaults.h
+        include/CefBaseDisplayGTKDefaultHandler.h
+        include/CefBaseLifeSpanDefaultHandler.h
+        include/CefBaseLoadDefaultHandler.h
+        libBaseDefaults/CefBaseDefaults.cpp
+        libBaseDefaults/CefBaseDisplayGTKDefaultHandler.cpp
+        libBaseDefaults/CefBaseLifeSpanDefaultHandler.cpp
+        libBaseDefaults/CefBaseLoadDefaultHandler.cpp
+)
+target_link_libraries(CEFBaseAppDefaults PUBLIC
+    CEFBaseAppCore
+    GTKUtils::GTKUtil
+)
+target_include_directories(CEFBaseAppDefaults PUBLIC
+    $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+set_property(TARGET CEFBaseAppDefaults PROPERTY PUBLIC_HEADER
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseDefaults.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseDisplayGTKDefaultHandler.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLifeSpanDefaultHandler.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLoadDefaultHandler.h
+)
+
 #
 # Installation instructions
 #
-install(TARGETS       CEFBaseAppUtils CEFBaseAppCore
+install(TARGETS       CEFBaseAppUtils CEFBaseAppCore CEFBaseAppDefaults
         EXPORT        CEFBaseAppTargets
         ARCHIVE       DESTINATION lib
         INCLUDES      DESTINATION include
