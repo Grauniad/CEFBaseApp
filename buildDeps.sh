@@ -24,6 +24,7 @@ declare -A depList
 depList[JSON]=https://github.com/Grauniad/FixedJSONParserCPP.git
 depList[websocketpp]=https://github.com/zaphoyd/websocketpp.git
 depList[Threads]=https://github.com/Grauniad/CPPThreadUtils.git
-depList[CEFDeps]=../CEFDep/
+depList[CEFDeps]=https://github.com/Grauniad/CEFDeps.git
+depList[GTKUtils]=https://github.com/Grauniad/GTKUtils.git
 
-source $DEPS_ROOT/CMakeUtils/build_tools/buildDepsCoUtilmmon.sh || exit 1
+source $DEPS_ROOT/CMakeUtils/build_tools/buildDepsCommon.sh || exit 1
