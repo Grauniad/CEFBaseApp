@@ -42,10 +42,12 @@ target_link_libraries(CEFBaseAppUtils PUBLIC
     OpenSSL::Crypto
 )
 
-target_include_directories(CEFBaseAppUtils PUBLIC
-    $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    ${CEF_INCLUDE_PATH}
+target_include_directories(CEFBaseAppUtils
+    PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${CEF_INCLUDE_PATH}
 )
 
 set_property(TARGET CEFBaseAppUtils PROPERTY PUBLIC_HEADER
@@ -97,9 +99,12 @@ target_link_libraries(CEFBaseAppCore PUBLIC
     OpenSSL::Crypto
     CEFBaseAppUtils
 )
-target_include_directories(CEFBaseAppCore PUBLIC
-    $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+target_include_directories(CEFBaseAppCore
+    PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${CEF_INCLUDE_PATH}
 )
 
 set_property(TARGET CEFBaseAppCore PROPERTY PUBLIC_HEADER
@@ -134,9 +139,12 @@ target_link_libraries(CEFBaseAppDefaults PUBLIC
     CEFBaseAppCore
     GTKUtils::GTKUtil
 )
-target_include_directories(CEFBaseAppDefaults PUBLIC
-    $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+target_include_directories(CEFBaseAppDefaults
+    PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${CEF_INCLUDE_PATH}
 )
 
 set_property(TARGET CEFBaseAppDefaults PROPERTY PUBLIC_HEADER
