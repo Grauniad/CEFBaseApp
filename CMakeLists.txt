@@ -14,7 +14,7 @@ find_package(OSDevTools 0.1 REQUIRED)
 find_package(UtilTime 0.1 REQUIRED)
 find_package(GTKUtils 0.1 REQUIRED)
 find_package(Boost 0.1 REQUIRED COMPONENTS system thread)
-find_package(WEBSOCKETPP 0.6.0 REQUIRED)
+find_package(WEBSOCKETPP 0.8.0 REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(CEF REQUIRED)
 
