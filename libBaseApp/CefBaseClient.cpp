@@ -5,7 +5,10 @@
  *      Author: lhumphreys
  */
 
-#include "CefBaseClient.h"
+#include <CefBaseClient.h>
+
+#include <CefBaseCookieMgr.h>
+#include <include/cef_cookie.h>
 
 CefBaseClient::CefBaseClient(CefBaseApp* parent)
         :
@@ -77,4 +80,9 @@ CefBaseDisplayHandler& CefBaseClient::DisplayHandler() {
 
 CefBaseLoadHandler& CefBaseClient::LoadHandler() {
     return static_cast<CefBaseLoadHandler&>(*loadHandler_);
+}
+
+std::unique_ptr<CefBaseCookies> CefBaseClient::GlobalCookieJar() {
+    auto jar = std::make_unique<CefBaseCookies>(CefCookieManager::GetGlobalManager(nullptr));
+    return std::unique_ptr<CefBaseCookies>(nullptr);
 }

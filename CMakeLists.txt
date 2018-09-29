@@ -24,11 +24,12 @@ add_library(CEFBaseAppUtils STATIC
     include/CEFJSLogging.h
     include/CEFJSObject.h
     include/CEFJSUtils.h
+    include/CefBaseCookieMgr.h
     libUtils/CEFDOMSnapshot.cpp
     libUtils/CEFJSLogging.cpp
     libUtils/CEFJSObject.cpp
     libUtils/CEFJSUtils.cpp
-)
+    libUtils/CefBaseCookieMgr.cpp)
 
 target_link_libraries(CEFBaseAppUtils PUBLIC
     FixedJSON::FixedJSON
@@ -55,6 +56,7 @@ set_property(TARGET CEFBaseAppUtils PROPERTY PUBLIC_HEADER
     ${CEFBaseApp_SOURCE_DIR}/include/CEFJSLogging.h
     ${CEFBaseApp_SOURCE_DIR}/include/CEFJSObject.h
     ${CEFBaseApp_SOURCE_DIR}/include/CEFJSUtils.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseCookieMgr.h
 )
 
 add_library(CEFBaseAppCore STATIC
@@ -85,8 +87,7 @@ add_library(CEFBaseAppCore STATIC
     libBaseApp/CefBaseRendererProcess.cpp
     libBaseApp/CefBaseRenderHandler.cpp
     libBaseApp/CefBaseRequestHandler.cpp
-    libBaseApp/CefBaseRequestReplies.cpp
-)
+    libBaseApp/CefBaseRequestReplies.cpp)
 target_link_libraries(CEFBaseAppCore PUBLIC
     FixedJSON::FixedJSON
     ThreadComms::ThreadComms
