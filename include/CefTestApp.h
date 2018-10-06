@@ -29,34 +29,24 @@ class DefaultTestLogger;
 
 class DummyCefApp: public CefBaseApp {
 public:
-    static DummyCefApp& Instance();
+    DummyCefApp(int argc, char** argv, std::string url);
 
-    virtual ~DummyCefApp() {}
-
-    /*
-     * Create a test to execute a standard function and add it to
-     * the internal list.
-     *
-     * IMPORTANT: for this to work this must point to a function loaded into
-     *            the same address in all (sub)processes...
-     *
-     */
-    void AddTest(const std::string& name, SimpleCefTest::TestFun* fptr);
+    virtual ~DummyCefApp() = default;
 
     /*
      * Execute all tests and return a suitable exit code for the application
      */
-    void RunTestsAndExit(int argc, char** argv);
+    static void RunTestsAndExit(CefRefPtr<DummyCefApp> app);
 
     CefRefPtr<CefTestJSHandler> JSHandler() { return jsHandler_; }
 
 private:
-    DummyCefApp();
 
     typedef std::shared_ptr<DummyCefAppHandlers> PointerType;
     PointerType handlers;
 
     CefRefPtr<CefTestJSHandler> jsHandler_;
+    CefMainArgs args;
 
 
 IMPLEMENT_REFCOUNTING(DummyCefApp);

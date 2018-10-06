@@ -22,8 +22,8 @@
 
 #include "CefBaseThread.h"
 
-CefTestContext::CefTestContext(CefRefPtr<CefV8Context> context, testLogger& log)
-        : context_(context), log_(log)
+CefTestContext::CefTestContext(CefRefPtr<CefV8Context> context)
+        : context_(context)
 {
 }
 

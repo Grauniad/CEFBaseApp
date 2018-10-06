@@ -1,17 +1,20 @@
 #ifndef CEFTESTAPP_TESTS_H_
 #define CEFTESTAPP_TESTS_H_
 
-#include <tester.h>
 #include "CefBaseJSMessageRouter.h"
 #include <CefBaseApp.h>
 #include <util_time.h>
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <sstream>
+
+using namespace std;
+using namespace nstimestamp;
 
 class CefTestContext {
 public:
-    CefTestContext(CefRefPtr<CefV8Context> context, testLogger& log);
+    CefTestContext(CefRefPtr<CefV8Context> context);
 
     struct CefTestBaseException {
         virtual ~CefTestBaseException() { } ;
@@ -92,11 +95,10 @@ public:
     /**
      * Return the log object
      */
-    testLogger& Log() { return log_; }
+    std::ostream& Log() { return std::cerr; }
 
 private:
     CefRefPtr<CefV8Context> context_;
-    testLogger&              log_;
 };
 
 class CefTestBase {

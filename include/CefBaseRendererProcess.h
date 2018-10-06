@@ -57,8 +57,8 @@ public:
      */
   virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
                                  CefRefPtr<CefFrame> frame,
-                                 CefRefPtr<CefV8Context> context);
 
+                                 CefRefPtr<CefV8Context> context);
 
 
   ///
