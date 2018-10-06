@@ -16,6 +16,7 @@
 #include "CefBaseLoadHandler.h"
 
 class CefBaseApp;
+class CefBaseCookies;
 
 #include <vector>
 
@@ -84,6 +85,8 @@ public:
     CefBaseDisplayHandler& DisplayHandler();
 
     CefBaseLoadHandler& LoadHandler();
+
+    std::unique_ptr<CefBaseCookies> GlobalCookieJar();
 
     CefBaseApp& Parent() {
         return *parent_;

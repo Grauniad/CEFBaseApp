@@ -5,14 +5,14 @@
  *      Author: lhumphreys
  */
 
-#include "CefBaseBrowserProcess.h"
 #include <CefBaseBrowserProcess.h>
 #include <CefBaseApp.h>
+#include <CefBaseCookieMgr.h>
+#include <include/cef_cookie.h>
 
 CefBaseBrowserProcess::CefBaseBrowserProcess(CefBaseApp& app)
    : app_(app)
 {
-
 }
 
 CefBaseBrowserProcess::~CefBaseBrowserProcess() {

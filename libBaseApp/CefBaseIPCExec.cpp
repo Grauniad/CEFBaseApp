@@ -49,8 +49,8 @@ namespace  {
         }
 
         void Dispatch(std::string result) override {
-            CefBaseThread::PostToCEFThread(tid, [=, cb=std::move(cb)] () ->
-            void {
+            CefBaseThread::PostToCEFThread(tid, [=, cb=std::move(cb)] () -> void
+            {
                 cb(std::move(result));
             });
         }

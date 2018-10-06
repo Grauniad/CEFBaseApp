@@ -7,6 +7,8 @@
 #include <env.h>
 #include <iostream>
 
+#include <include/cef_cookie.h>
+
 #include "CefBaseThread.h"
 #include <gtest/gtest.h>
 
@@ -76,6 +78,7 @@ void DummyCefAppHandlers::OnContextCreated(
     CefRefPtr<CefV8Context> context)
 {
     DummyCefApp::SetTestBrowser(browser);
+    DummyCefApp::SetTestContext(context);
     // JS initialised - run tests
     DoInNewThread([this,browser, context] () {
         std::cout.flush();
