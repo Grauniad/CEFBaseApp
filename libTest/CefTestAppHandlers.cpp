@@ -1,6 +1,7 @@
 #include "CefTestAppHandlers.h"
 #include "CefTestClient.h"
 #include "CefTestApp.h"
+#include "CefBaseIPCExec.h"
 
 #include "include/wrapper/cef_helpers.h"
 #include <env.h>
@@ -21,6 +22,15 @@ DummyCefAppHandlers::DummyCefAppHandlers(
     , argv(argv)
     , app(app)
 {
+    // SimpleHandler implements browser-level callbacks.
+    std::shared_ptr<DummyCefClient> handler(new DummyCefClient);
+    std::shared_ptr<CefClient> client = handler;
+    std::shared_ptr<CefLifeSpanHandler> lifeHandler = handler;
+    std::shared_ptr<CefRenderHandler> renderHandler = handler;
+
+    app.Client().InstallMessagerHandler(client);
+    app.Client().LifeSpanHandler().InstallHandler(lifeHandler);
+    app.Client().RenderHandler().InstallHandler(renderHandler);
 }
 
 void DummyCefAppHandlers::OnContextInitialized() {
@@ -31,16 +41,6 @@ void DummyCefAppHandlers::OnContextInitialized() {
     // Information used when creating the native window.
     CefWindowInfo window_info;
     window_info.SetAsWindowless(0);
-
-    // SimpleHandler implements browser-level callbacks.
-    std::shared_ptr<DummyCefClient> handler(new DummyCefClient);
-    std::shared_ptr<CefClient> client = handler;
-    std::shared_ptr<CefLifeSpanHandler> lifeHandler = handler;
-    std::shared_ptr<CefRenderHandler> renderHandler = handler;
-
-    app.Client().InstallMessagerHandler(client);
-    app.Client().LifeSpanHandler().InstallHandler(lifeHandler);
-    app.Client().RenderHandler().InstallHandler(renderHandler);
 
     // Specify CEF browser settings here.
     CefBrowserSettings browser_settings;
@@ -75,6 +75,7 @@ void DummyCefAppHandlers::OnContextCreated(
     CefRefPtr<CefFrame> frame,
     CefRefPtr<CefV8Context> context)
 {
+    DummyCefApp::SetTestBrowser(browser);
     // JS initialised - run tests
     DoInNewThread([this,browser, context] () {
         std::cout.flush();

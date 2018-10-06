@@ -98,7 +98,7 @@ public:
      * Execute a task in the render process, and wait for the result...
      */
     template<class T, class TASK>
-    static T GetResultFromRender(TASK&& task) {
+    static T GetResultFromRender(TASK task) {
         return GetResultFromCEFThread<T,TASK>(TID_RENDERER,std::move(task));
     }
 
@@ -120,7 +120,7 @@ protected:
     class Work: public CefBaseRefCounted
     {
     public:
-        Work(Function&& f): func(f) { }
+        Work(Function f): func(f) { }
 
         void Execute() { result.set_value(func()); }
 
@@ -136,7 +136,7 @@ protected:
     class VoidWork: public CefBaseRefCounted
     {
     public:
-        VoidWork(Function&& f): func(f) { }
+        VoidWork(Function f): func(f) { }
 
         void Execute() { func();}
 
@@ -158,7 +158,7 @@ public:
         function();
     }
 
-    static void StartInThread(F&& function) {
+    static void StartInThread(F function) {
         std::shared_ptr<CefBaseWorkerThread<F>> worker(
             new CefBaseWorkerThread(std::move(function)));
 
@@ -166,7 +166,7 @@ public:
     }
 
 private:
-    CefBaseWorkerThread(F&& function): function(function) { }
+    CefBaseWorkerThread(F function): function(function) { }
 
     CefBaseWorkerThread(const CefBaseWorkerThread& rhs) = delete;
 

@@ -4,12 +4,40 @@
 #include <CefBaseThread.h>
 #include <OSTools.h>
 
+CefBaseApp* app;
+
+class GetProcessName: public CefBaseIPCExec::IIPC_TriggeredFunction {
+public:
+    std::string Execute(CefBaseApp& app, std::string arg) override {
+        switch (app.CurrentProcess())
+        {
+            case CefBaseApp::ProcessId::UNKNOWN:
+                return "UNKNOWN";
+            case CefBaseApp::ProcessId::BROWSER:
+                return "BROWSER";
+            case CefBaseApp::ProcessId::RENDERER:
+                return "RENDERER";
+        }
+        return "";
+    }
+};
+
 int main (int argc, char** argv) {
     const std::string rootPath = OS::Dirname(OS::GetExe());
     const std::string url = "file://" + rootPath + "/index.html";
     CefRefPtr<DummyCefApp> testApp(new DummyCefApp(argc, argv, url));
+    app = testApp.get();
+    testApp->IPC().Install("GET_PROC_NAME", std::make_shared<GetProcessName>());
 
     DummyCefApp::RunTestsAndExit(testApp);
+}
+
+TEST(GET_RESULT_FROM, RENDERER_PROC_NAME) {
+    ASSERT_TRUE(
+            CefBaseThread::GetResultFromRender<bool>([=] () -> bool {
+                return (app->CurrentProcess() == CefBaseApp::ProcessId::RENDERER);
+            })
+    );
 }
 
 TEST(GET_RESULT_FROM, RENDERER) {

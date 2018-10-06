@@ -21,6 +21,14 @@ public:
     CefBaseRendererProcess(CefBaseApp& app);
 
     virtual ~CefBaseRendererProcess();
+    /**
+     * PROCESS: Renderer
+     * THREAD:  RENDERER
+     *
+     * Event: The render process main thread has been created...
+     *
+     */
+    void OnRenderThreadCreated(CefRefPtr<CefListValue>) override;
 
     /**
      * PROCESS: Renderer

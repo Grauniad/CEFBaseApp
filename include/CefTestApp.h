@@ -40,7 +40,12 @@ public:
 
     CefRefPtr<CefTestJSHandler> JSHandler() { return jsHandler_; }
 
+    static void SetTestBrowser(CefRefPtr<CefBrowser> b);
+    static CefRefPtr<CefBrowser> GetTestBrowser();
+    struct NoTestBrowserConfigured {};
+    struct TestBrowserAlreadyConfigured {};
 private:
+    static CefRefPtr<CefBrowser> testBrowser;
 
     typedef std::shared_ptr<DummyCefAppHandlers> PointerType;
     PointerType handlers;

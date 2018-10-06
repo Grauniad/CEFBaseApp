@@ -5,6 +5,7 @@
 #include "CefBaseDisplayGTKDefaultHandler.h"
 #include <CefBaseLoadDefaultHandler.h>
 #include <CefBaseLifeSpanDefaultHandler.h>
+#include <CefBaseIPCExec.h>
 
 
 void CefBaseDefaults::InstallDefaultHandlers(CefBaseApp& app) {
