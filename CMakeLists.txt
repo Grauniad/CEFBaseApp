@@ -40,6 +40,7 @@ target_link_libraries(CEFBaseAppUtils PUBLIC
     Boost::boost
     OpenSSL::SSL
     OpenSSL::Crypto
+    ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
 )
 
 target_include_directories(CEFBaseAppUtils
@@ -85,8 +86,7 @@ add_library(CEFBaseAppCore STATIC
     libBaseApp/CefBaseRendererProcess.cpp
     libBaseApp/CefBaseRenderHandler.cpp
     libBaseApp/CefBaseRequestHandler.cpp
-    libBaseApp/CefBaseRequestReplies.cpp
-)
+    libBaseApp/CefBaseRequestReplies.cpp)
 target_link_libraries(CEFBaseAppCore PUBLIC
     FixedJSON::FixedJSON
     ThreadComms::ThreadComms
@@ -154,6 +154,68 @@ set_property(TARGET CEFBaseAppDefaults PROPERTY PUBLIC_HEADER
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLoadDefaultHandler.h
 )
 
+add_library(CefTestApp STATIC
+        include/CefTestApp.h
+        include/CefTestAppHandlers.h
+        include/CefTestClient.h
+        include/CefTestJSHandler.h
+        include/CefTests.h
+
+        libTest/CefTestApp.cpp
+        libTest/CefTestAppHandlers.cpp
+        libTest/CefTestClient.cpp
+        libTest/CefTestJSHandler.cpp
+        libTest/CefTests.cpp
+)
+
+target_link_libraries(CefTestApp PUBLIC CEFBaseAppDefaults UtilTime::Time)
+
+target_include_directories(CefTestApp
+        PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${CEF_INCLUDE_PATH}
+        )
+
+set_property(TARGET CEFBaseAppDefaults PROPERTY PUBLIC_HEADER
+        ${CEFBaseApp_SOURCE_DIR}/include/CefBaseDefaults.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefBaseDisplayGTKDefaultHandler.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLifeSpanDefaultHandler.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLoadDefaultHandler.h
+        )
+
+#
+# Test Configuration
+#
+find_package(GTest REQUIRED)
+
+add_executable(cookie test/cookie.cpp)
+COPY_FILES(cookie "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR_RELEASE}" ${CEFBaseApp_BINARY_DIR})
+COPY_FILES(cookie "${CEF_RESOURCE_FILES}" "${CEF_BINARY_DIR_RELEASE}" ${CEFBaseApp_BINARY_DIR})
+COPY_FILES(cookie "index.html" ${CEFBaseApp_SOURCE_DIR}/test  ${CEFBaseApp_BINARY_DIR})
+
+enable_testing()
+add_test(cookie cookie)
+
+target_link_libraries(cookie
+    PUBLIC
+        CefTestApp
+        ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
+        ${CEF_LIB_RELEASE}
+        ${CEF_STANDARD_LIBS}
+        GTest::GTest
+        stdc++fs
+)
+
+target_include_directories(cookie
+        PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${CEF_INCLUDE_PATH}
+    )
+
 #
 # Installation instructions
 #
@@ -191,3 +253,18 @@ install (
     FILES       CEFBaseAppConfig.cmake
     DESTINATION lib/cmake/CEFBaseApp
 )
+
+#
+# Configure Coverage Build
+#
+SET(CMAKE_CXX_FLAGS_COVERAGE
+    "${GCC_DEBUG_FLAGS} -fprofile-arcs -ftest-coverage"
+    CACHE STRING "Flags used by the C++ compiler during coverage builds."
+    FORCE )
+SET(CMAKE_C_FLAGS_COVERAGE
+    "${GCC_DEBUG_FLAGS} -fprofile-arcs -ftest-coverage"
+    CACHE STRING "Flags used by the C compiler during coverage builds."
+    FORCE )
+MARK_AS_ADVANCED(
+    CMAKE_CXX_FLAGS_COVERAGE
+    CMAKE_C_FLAGS_COVERAGE)

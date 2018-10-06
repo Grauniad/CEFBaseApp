@@ -4,20 +4,18 @@
 #include "include/cef_app.h"
 #include "CefTests.h"
 
+class DummyCefApp;
+
 class DummyCefAppHandlers:
         public CefBrowserProcessHandler,
         public CefRenderProcessHandler
 {
 public:
-    DummyCefAppHandlers();
-
-    /**********************************************************************
-     *                         Setup
-     **********************************************************************/
-    /*
-     * Add a test to the internal list
-     */
-    void AddTest(std::unique_ptr<CefTestBase>&& test);
+    DummyCefAppHandlers(
+            DummyCefApp& app,
+            int argc,
+            char** argv,
+            std::string error);
 
     virtual ~DummyCefAppHandlers();
 
@@ -44,15 +42,18 @@ public:
      *                         Renderer App
      **********************************************************************/
 
-    virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<CefFrame> frame,
-                                    CefRefPtr<CefV8Context> context);
+    void OnContextCreated(CefRefPtr<CefBrowser> browser,
+                          CefRefPtr<CefFrame> frame,
+                          CefRefPtr<CefV8Context> context) override;
 
     bool OK() const { return exitClean; }
 
 private:
-    std::vector<std::unique_ptr<CefTestBase>> tests;
+    const std::string url;
+    int argc;
+    char ** argv;
     static bool exitClean;
+    DummyCefApp& app;
 
 	IMPLEMENT_REFCOUNTING(DummyCefAppHandlers);
 };

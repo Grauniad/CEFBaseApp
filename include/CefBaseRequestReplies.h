@@ -12,6 +12,8 @@
 #include <string>
 #include <include/wrapper/cef_message_router.h>
 #include <include/cef_browser_process_handler.h>
+#include <memory>
+
 
 class CefBaseJSRequestReply {
 public:
