@@ -30,9 +30,9 @@ public:
      *                          Message handling
      ***********************************************************************/
 
-    virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                                            CefProcessId source_process,
-                                            CefRefPtr<CefProcessMessage> message);
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                  CefProcessId source_process,
+                                  CefRefPtr<CefProcessMessage> message) override;
 
     /************************************************************************
      *                          Windowless Rendering

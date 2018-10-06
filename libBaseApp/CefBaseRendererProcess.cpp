@@ -8,6 +8,8 @@
 #include "CefBaseRendererProcess.h"
 
 #include <CefBaseApp.h>
+#include <CefBaseRendererProcess.h>
+
 
 CefBaseRendererProcess::CefBaseRendererProcess(CefBaseApp& app)
    : app_(app)
@@ -47,4 +49,11 @@ bool CefBaseRendererProcess::OnProcessMessageReceived(
 
 CefRefPtr<CefLoadHandler> CefBaseRendererProcess::GetLoadHandler() {
     return app_.GetClient()->GetLoadHandler();
+}
+
+void CefBaseRendererProcess::OnRenderThreadCreated(CefRefPtr<CefListValue> v) {
+    app_.SetProcessTypeRenderer();
+    for (auto& hdlr: handlers) {
+        hdlr->OnRenderThreadCreated(v);
+    }
 }

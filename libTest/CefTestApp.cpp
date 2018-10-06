@@ -14,6 +14,7 @@ using namespace std;
 /**********************************************************************
 *                         App
 **********************************************************************/
+CefRefPtr<CefBrowser> DummyCefApp::testBrowser;
 
 void DummyCefApp::RunTestsAndExit(CefRefPtr<DummyCefApp> app) {
 
@@ -57,12 +58,29 @@ void DummyCefApp::RunTestsAndExit(CefRefPtr<DummyCefApp> app) {
 }
 
 DummyCefApp::DummyCefApp(int argc, char ** argv, std::string url)
-   : handlers(new DummyCefAppHandlers(*this, argc, argv, std::move(url)))
+   : CefBaseApp()
+   , handlers(new DummyCefAppHandlers(*this, argc, argv, std::move(url)))
    , jsHandler_(new CefTestJSHandler("testQuery","testQueryCancel"))
    , args(argc, argv)
 {
     jsHandler_->InstallHandler(*this);
     Renderer().InstallHandler(handlers);
     Browser().InstallHandler(handlers);
+}
+
+CefRefPtr<CefBrowser> DummyCefApp::GetTestBrowser() {
+    if (DummyCefApp::testBrowser.get()) {
+        return DummyCefApp::testBrowser;
+    } else {
+        throw NoTestBrowserConfigured{};
+    }
+}
+
+void DummyCefApp::SetTestBrowser(CefRefPtr<CefBrowser> b) {
+    if (DummyCefApp::testBrowser.get()) {
+        throw TestBrowserAlreadyConfigured{};
+    } else {
+        DummyCefApp::testBrowser = b;
+    }
 }
 

@@ -63,6 +63,8 @@ add_library(CEFBaseAppCore STATIC
     include/CefBaseBrowserProcess.h
     include/CefBaseClient.h
     include/CefBaseDisplayHandler.h
+    include/CefBaseIPCExec.h
+    include/CefBaseIPCVia.h
     include/CefBaseJSHandler.h
     include/CefBaseJSMessageRouter.h
     include/CefBaseLifeSpanHandler.h
@@ -80,6 +82,8 @@ add_library(CEFBaseAppCore STATIC
     libBaseApp/CefBaseDisplayHandler.cpp
     libBaseApp/CefBaseJSHandler.cpp
     libBaseApp/CefBaseJSMessageRouter.cpp
+    libBaseApp/CefBaseIPCExec.cpp
+    libBaseApp/CefBaseIPCVia.cpp
     libBaseApp/CefBaseLifeSpanHandler.cpp
     libBaseApp/CefBaseLoadHandler.cpp
     libBaseApp/CefBaseMainLoop.cpp
@@ -87,6 +91,7 @@ add_library(CEFBaseAppCore STATIC
     libBaseApp/CefBaseRenderHandler.cpp
     libBaseApp/CefBaseRequestHandler.cpp
     libBaseApp/CefBaseRequestReplies.cpp)
+
 target_link_libraries(CEFBaseAppCore PUBLIC
     FixedJSON::FixedJSON
     ThreadComms::ThreadComms
@@ -112,6 +117,8 @@ set_property(TARGET CEFBaseAppCore PROPERTY PUBLIC_HEADER
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseBrowserProcess.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseClient.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseDisplayHandler.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseIPCExec.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseIPCVia.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseJSHandler.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseJSMessageRouter.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLifeSpanHandler.h
@@ -196,10 +203,12 @@ COPY_FILES(cookie "${CEF_RESOURCE_FILES}" "${CEF_BINARY_DIR_RELEASE}" ${CEFBaseA
 COPY_FILES(cookie "index.html" ${CEFBaseApp_SOURCE_DIR}/test  ${CEFBaseApp_BINARY_DIR})
 
 add_executable(threads test/threads.cpp)
+add_executable(ipc test/ipc.cpp)
 
 enable_testing()
 add_test(cookie cookie)
 add_test(threads threads)
+add_test(ipc ipc)
 
 target_link_libraries(cookie
     PUBLIC
@@ -235,6 +244,23 @@ target_include_directories(threads
         PRIVATE
         ${CEF_INCLUDE_PATH}
 )
+
+target_link_libraries(ipc
+        PUBLIC
+        CefTestApp
+        ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
+        ${CEF_LIB_RELEASE}
+        ${CEF_STANDARD_LIBS}
+        GTest::GTest
+        )
+
+target_include_directories(ipc
+        PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${CEF_INCLUDE_PATH}
+        )
 
 #
 # Installation instructions
