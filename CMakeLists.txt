@@ -195,8 +195,11 @@ COPY_FILES(cookie "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR_RELEASE}" ${CEFBaseApp
 COPY_FILES(cookie "${CEF_RESOURCE_FILES}" "${CEF_BINARY_DIR_RELEASE}" ${CEFBaseApp_BINARY_DIR})
 COPY_FILES(cookie "index.html" ${CEFBaseApp_SOURCE_DIR}/test  ${CEFBaseApp_BINARY_DIR})
 
+add_executable(threads test/threads.cpp)
+
 enable_testing()
 add_test(cookie cookie)
+add_test(threads threads)
 
 target_link_libraries(cookie
     PUBLIC
@@ -215,6 +218,23 @@ target_include_directories(cookie
         PRIVATE
         ${CEF_INCLUDE_PATH}
     )
+
+target_link_libraries(threads
+        PUBLIC
+        CefTestApp
+        ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
+        ${CEF_LIB_RELEASE}
+        ${CEF_STANDARD_LIBS}
+        GTest::GTest
+)
+
+target_include_directories(threads
+        PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${CEF_INCLUDE_PATH}
+)
 
 #
 # Installation instructions

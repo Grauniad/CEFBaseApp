@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <memory>
+#include <iostream>
 
 #include "include/cef_task.h"
 
@@ -64,14 +65,23 @@ public:
         std::thread([=]() { this->Run();}).detach();
     }
 
+    struct UnsupportedIPCRequested {};
+
     template<class T, class TASK>
-    static T GetResultFromCEFThread(cef_thread_id_t tid, TASK&& task) {
-        CefRefPtr<Work<T,TASK>> work =
-            new CefBaseThread::Work<T,TASK>(std::move(task));
+    static T GetResultFromCEFThread(cef_thread_id_t tid, TASK task) {
+        if (CefCurrentlyOn(tid)) {
+            // We're already there - no need to get fancy...
+            return task();
+        } else {
+            CefRefPtr<Work<T, TASK>> work =
+                    new CefBaseThread::Work<T, TASK> (std::move(task));
 
-        CefPostTask(tid,base::Bind(&Work<T,TASK>::Execute,work));
-
-        return work->Result();
+            if ( CefPostTask(tid,base::Bind(&Work<T, TASK>::Execute,work))) {
+                return work->Result();
+            } else {
+                throw UnsupportedIPCRequested{};
+            }
+        }
     }
 
     template<class TASK>
@@ -79,7 +89,9 @@ public:
         CefRefPtr<VoidWork<TASK>> work =
             new CefBaseThread::VoidWork<TASK>(std::move(task));
 
-        CefPostTask(tid,base::Bind(&VoidWork<TASK>::Execute,work));
+        if (!CefPostTask(tid,base::Bind(&VoidWork<TASK>::Execute,work))) {
+            throw UnsupportedIPCRequested{};
+        }
     }
 
     /**
@@ -88,6 +100,14 @@ public:
     template<class T, class TASK>
     static T GetResultFromRender(TASK&& task) {
         return GetResultFromCEFThread<T,TASK>(TID_RENDERER,std::move(task));
+    }
+
+    /**
+     * Execute a task in the render process, and wait for the result...
+     */
+    template<class T, class TASK>
+    static T GetResultFromUI(TASK task) {
+        return GetResultFromCEFThread<T,TASK>(TID_UI,std::move(task));
     }
 
 protected:
