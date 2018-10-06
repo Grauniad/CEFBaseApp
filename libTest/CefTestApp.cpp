@@ -15,6 +15,7 @@ using namespace std;
 *                         App
 **********************************************************************/
 CefRefPtr<CefBrowser> DummyCefApp::testBrowser;
+CefRefPtr<CefV8Context> DummyCefApp::testContext;
 
 void DummyCefApp::RunTestsAndExit(CefRefPtr<DummyCefApp> app) {
 
@@ -81,6 +82,22 @@ void DummyCefApp::SetTestBrowser(CefRefPtr<CefBrowser> b) {
         throw TestBrowserAlreadyConfigured{};
     } else {
         DummyCefApp::testBrowser = b;
+    }
+}
+
+void DummyCefApp::SetTestContext(CefRefPtr<CefV8Context> c) {
+    if (testContext.get()) {
+        throw TestContextAlreadyConfigured{};
+    } else {
+        testContext = c;
+    }
+}
+
+CefRefPtr<CefV8Context> DummyCefApp::GetTestContext() {
+    if (testContext.get()) {
+        return testContext;
+    } else {
+        throw NoTestContextConfigured{};
     }
 }
 

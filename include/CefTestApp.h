@@ -44,8 +44,14 @@ public:
     static CefRefPtr<CefBrowser> GetTestBrowser();
     struct NoTestBrowserConfigured {};
     struct TestBrowserAlreadyConfigured {};
+
+    static void SetTestContext(CefRefPtr<CefV8Context> b);
+    static CefRefPtr<CefV8Context> GetTestContext();
+    struct NoTestContextConfigured {};
+    struct TestContextAlreadyConfigured {};
 private:
     static CefRefPtr<CefBrowser> testBrowser;
+    static CefRefPtr<CefV8Context> testContext;
 
     typedef std::shared_ptr<DummyCefAppHandlers> PointerType;
     PointerType handlers;

@@ -24,11 +24,12 @@ add_library(CEFBaseAppUtils STATIC
     include/CEFJSLogging.h
     include/CEFJSObject.h
     include/CEFJSUtils.h
+    include/CefBaseCookieMgr.h
     libUtils/CEFDOMSnapshot.cpp
     libUtils/CEFJSLogging.cpp
     libUtils/CEFJSObject.cpp
     libUtils/CEFJSUtils.cpp
-)
+    libUtils/CefBaseCookieMgr.cpp)
 
 target_link_libraries(CEFBaseAppUtils PUBLIC
     FixedJSON::FixedJSON
@@ -56,6 +57,7 @@ set_property(TARGET CEFBaseAppUtils PROPERTY PUBLIC_HEADER
     ${CEFBaseApp_SOURCE_DIR}/include/CEFJSLogging.h
     ${CEFBaseApp_SOURCE_DIR}/include/CEFJSObject.h
     ${CEFBaseApp_SOURCE_DIR}/include/CEFJSUtils.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseCookieMgr.h
 )
 
 add_library(CEFBaseAppCore STATIC
@@ -252,7 +254,7 @@ target_link_libraries(ipc
         ${CEF_LIB_RELEASE}
         ${CEF_STANDARD_LIBS}
         GTest::GTest
-        )
+)
 
 target_include_directories(ipc
         PUBLIC
@@ -260,7 +262,7 @@ target_include_directories(ipc
         $<INSTALL_INTERFACE:include>
         PRIVATE
         ${CEF_INCLUDE_PATH}
-        )
+)
 
 #
 # Installation instructions

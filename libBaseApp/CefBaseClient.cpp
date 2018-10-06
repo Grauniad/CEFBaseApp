@@ -5,7 +5,10 @@
  *      Author: lhumphreys
  */
 
-#include "CefBaseClient.h"
+#include <CefBaseClient.h>
+
+#include <CefBaseCookieMgr.h>
+#include <include/cef_cookie.h>
 
 CefBaseClient::CefBaseClient(CefBaseApp* parent)
         :
@@ -19,7 +22,6 @@ CefBaseClient::CefBaseClient(CefBaseApp* parent)
 }
 
 CefBaseClient::~CefBaseClient() {
-    // TODO Auto-generated destructor stub
 }
 
 CefRefPtr<CefLifeSpanHandler> CefBaseClient::GetLifeSpanHandler() {
@@ -77,4 +79,8 @@ CefBaseDisplayHandler& CefBaseClient::DisplayHandler() {
 
 CefBaseLoadHandler& CefBaseClient::LoadHandler() {
     return static_cast<CefBaseLoadHandler&>(*loadHandler_);
+}
+
+std::unique_ptr<CefBaseCookies> CefBaseClient::GlobalCookieJar() {
+    return std::make_unique<CefBaseCookies>(CefCookieManager::GetGlobalManager (nullptr));
 }
