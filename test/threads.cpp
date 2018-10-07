@@ -92,6 +92,18 @@ TEST_F(PostTo, RENDERER) {
     WaitForResult(3);
 }
 
+TEST_F(PostTo, RENDERER_IN_50MS) {
+    Time start;
+    CefBaseThread::PostToCEFThread(TID_RENDERER, [&] () -> void {
+        SetResult(3);
+    }, 50);
+
+    WaitForResult(3);
+    Time end;
+    ASSERT_GT(end.DiffUSecs(start), 50 * 1000);
+    ASSERT_LT(end.DiffUSecs(start), 51 * 1000);
+}
+
 TEST_F(PostTo, SAME_THREAD) {
     CefBaseThread::PostToCEFThread(TID_RENDERER, [&] () -> void {
         CefBaseThread::PostToCEFThread(TID_RENDERER, [&] () -> void {

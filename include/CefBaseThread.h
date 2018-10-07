@@ -85,11 +85,18 @@ public:
     }
 
     template<class TASK>
-    static void PostToCEFThread(cef_thread_id_t tid, TASK task) {
+    static void PostToCEFThread(cef_thread_id_t tid, TASK task, int64 delayms = 0) {
         CefRefPtr<VoidWork<TASK>> work =
             new CefBaseThread::VoidWork<TASK>(std::move(task));
 
-        if (!CefPostTask(tid,base::Bind(&VoidWork<TASK>::Execute,work))) {
+        bool posted = false;
+        if ( delayms > 0 ) {
+            posted = CefPostDelayedTask(tid,base::Bind(&VoidWork<TASK>::Execute,work), delayms);
+        } else {
+            posted = CefPostTask(tid,base::Bind(&VoidWork<TASK>::Execute,work));
+        }
+
+        if (!posted) {
             throw UnsupportedIPCRequested{};
         }
     }
