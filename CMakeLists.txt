@@ -169,12 +169,14 @@ add_library(CefTestApp STATIC
         include/CefTestClient.h
         include/CefTestJSHandler.h
         include/CefTests.h
+        include/CefTestJSBaseTest.h
 
         libTest/CefTestApp.cpp
         libTest/CefTestAppHandlers.cpp
         libTest/CefTestClient.cpp
         libTest/CefTestJSHandler.cpp
         libTest/CefTests.cpp
+        libTest/CefTestJSBaseTest.cpp
 )
 
 target_link_libraries(CefTestApp PUBLIC CEFBaseAppDefaults UtilTime::Time)
@@ -185,14 +187,16 @@ target_include_directories(CefTestApp
         $<INSTALL_INTERFACE:include>
         PRIVATE
         ${CEF_INCLUDE_PATH}
-        )
+)
 
-set_property(TARGET CEFBaseAppDefaults PROPERTY PUBLIC_HEADER
-        ${CEFBaseApp_SOURCE_DIR}/include/CefBaseDefaults.h
-        ${CEFBaseApp_SOURCE_DIR}/include/CefBaseDisplayGTKDefaultHandler.h
-        ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLifeSpanDefaultHandler.h
-        ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLoadDefaultHandler.h
-        )
+set_property(TARGET CefTestApp PROPERTY PUBLIC_HEADER
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestApp.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestAppHandlers.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestClient.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestJSHandler.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTests.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestJSBaseTest.h
+)
 
 #
 # Test Configuration
@@ -267,7 +271,7 @@ target_include_directories(ipc
 #
 # Installation instructions
 #
-install(TARGETS       CEFBaseAppUtils CEFBaseAppCore CEFBaseAppDefaults
+install(TARGETS       CEFBaseAppUtils CEFBaseAppCore CEFBaseAppDefaults CefTestApp
         EXPORT        CEFBaseAppTargets
         ARCHIVE       DESTINATION lib
         INCLUDES      DESTINATION include
