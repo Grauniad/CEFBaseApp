@@ -86,7 +86,7 @@ void CefBaseCookies::ForEachCookie(
         storedCb->Timeout();
     }, timeoutms);
 
-    if (!mgr->VisitUrlCookies(url, false, v)) {
+    if (!mgr->VisitUrlCookies(url, true, v)) {
         callback("", "", RemainingCookies::NO_COOKIES);
     }
 }
