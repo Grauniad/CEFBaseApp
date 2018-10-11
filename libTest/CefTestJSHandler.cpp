@@ -9,6 +9,7 @@
 #include "logger.h"
 #include <util_time.h>
 using namespace std;
+using namespace nstimestamp;
 
 class TestLogFunc: public CEFJSUtils::JSFunction {
 public:

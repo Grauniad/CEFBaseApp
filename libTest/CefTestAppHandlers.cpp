@@ -1,17 +1,38 @@
 #include "CefTestAppHandlers.h"
 #include "CefTestClient.h"
 #include "CefTestApp.h"
+#include "CefBaseIPCExec.h"
 
 #include "include/wrapper/cef_helpers.h"
 #include <env.h>
 #include <iostream>
 
+#include <include/cef_cookie.h>
+
 #include "CefBaseThread.h"
+#include <gtest/gtest.h>
 
 bool DummyCefAppHandlers::exitClean = true;
 
-DummyCefAppHandlers::DummyCefAppHandlers()
+DummyCefAppHandlers::DummyCefAppHandlers(
+        DummyCefApp& app,
+        int argc,
+        char ** argv,
+        std::string url)
+    : url(std::move(url))
+    , argc(argc)
+    , argv(argv)
+    , app(app)
 {
+    // SimpleHandler implements browser-level callbacks.
+    std::shared_ptr<DummyCefClient> handler(new DummyCefClient);
+    std::shared_ptr<CefClient> client = handler;
+    std::shared_ptr<CefLifeSpanHandler> lifeHandler = handler;
+    std::shared_ptr<CefRenderHandler> renderHandler = handler;
+
+    app.Client().InstallMessagerHandler(client);
+    app.Client().LifeSpanHandler().InstallHandler(lifeHandler);
+    app.Client().RenderHandler().InstallHandler(renderHandler);
 }
 
 void DummyCefAppHandlers::OnContextInitialized() {
@@ -23,29 +44,13 @@ void DummyCefAppHandlers::OnContextInitialized() {
     CefWindowInfo window_info;
     window_info.SetAsWindowless(0);
 
-    // SimpleHandler implements browser-level callbacks.
-    std::shared_ptr<DummyCefClient> handler(new DummyCefClient);
-    std::shared_ptr<CefClient> client = handler;
-    std::shared_ptr<CefLifeSpanHandler> lifeHandler = handler;
-    std::shared_ptr<CefRenderHandler> renderHandler = handler;
-
-    DummyCefApp::Instance().Client().InstallMessagerHandler(client);
-    DummyCefApp::Instance().Client().LifeSpanHandler().InstallHandler(
-        lifeHandler);
-    DummyCefApp::Instance().Client().RenderHandler().InstallHandler(
-        renderHandler);
-
     // Specify CEF browser settings here.
     CefBrowserSettings browser_settings;
-
-    std::string root = ENV::GetEnvString("PROJECT_ROOT_DIR");
-
-    std::string url = "file://" + root + "/DEV_TOOLS/CPP/Tests/CEF/test.html";
 
     // Create the first browser window.
     CefBrowserHost::CreateBrowser(
         window_info,
-        DummyCefApp::Instance().GetClient().get(),
+        app.GetClient().get(),
         url,
         browser_settings,
         NULL);
@@ -67,37 +72,28 @@ void DummyCefAppHandlers::Abort() {
     }
 }
 
-void DummyCefAppHandlers::AddTest(std::unique_ptr<CefTestBase>&& test) {
-    tests.emplace_back(std::move(test));
-}
-
-
 void DummyCefAppHandlers::OnContextCreated(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
     CefRefPtr<CefV8Context> context)
 {
+    DummyCefApp::SetTestBrowser(browser);
+    DummyCefApp::SetTestContext(context);
     // JS initialised - run tests
     DoInNewThread([this,browser, context] () {
-        try
-        {
-            for (auto& test : this->tests ) {
-                Test(test->Name(),[this, &test,context] (testLogger& log) -> int {
-                    CefTestContext testContext(context,log);
-                    int result = -1;
+        std::cout.flush();
+        ::testing::InitGoogleTest(&argc, argv);
+        int result = RUN_ALL_TESTS();
 
-                    try {
-                        result = test->RunTest(testContext);
-                    } catch (const CefTestContext::CefTestBaseException& e) {
-                        log << e.Dump() << endl;
-                        result = -1;
-                    }
-
-                    return result;
-                }).RunTest(Test::PRINT_LOG_AND_THROW);
-            }
-
-
+        if (result != 0) {
+            // When done - kill the process...
+            CefBaseThread::GetResultFromRender<int>([=] () {
+                CefRefPtr<CefProcessMessage> msg =
+                        CefProcessMessage::Create("ABORT");
+                browser->SendProcessMessage(PID_BROWSER,msg);
+                return 0;
+            });
+        } else {
             // When done - kill the process...
             CefBaseThread::GetResultFromRender<int>([=] () {
                 CefRefPtr<CefProcessMessage> msg =
@@ -106,15 +102,7 @@ void DummyCefAppHandlers::OnContextCreated(
                 return 0;
             });
         }
-        catch (Test::TestFailureException& fail)
-        {
-            CefBaseThread::GetResultFromRender<int>([=] () {
-                CefRefPtr<CefProcessMessage> msg =
-                        CefProcessMessage::Create("ABORT");
-                browser->SendProcessMessage(PID_BROWSER,msg);
-                return 0;
-            });
-        }
+
     });
 }
 

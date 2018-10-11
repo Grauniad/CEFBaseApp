@@ -12,11 +12,13 @@
 #include "include/cef_app.h"
 #include "CefBaseMultiHandler.h"
 
+class CefBaseApp;
+
 class CefBaseBrowserProcess:
           public CefBaseMultiHandler<CefBrowserProcessHandler>
 {
 public:
-    CefBaseBrowserProcess();
+    CefBaseBrowserProcess(CefBaseApp& app);
 
     /**
      * PROCESS: Browser
@@ -27,10 +29,11 @@ public:
      * CEF has been initialised by the library - now do any application level
      * startup actions (create initial windows etc...)
      */
-    CefBaseMultiHandler_Forward(OnContextInitialized);
+     void OnContextInitialized() override;
 
     virtual ~CefBaseBrowserProcess();
 private:
+    CefBaseApp& app_;
 };
 
 #endif /* CEFBASEBROWSERPROCESS_H_ */

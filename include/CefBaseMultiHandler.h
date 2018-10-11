@@ -10,6 +10,7 @@
 
 
 #include "include/wrapper/cef_helpers.h"
+#include <memory>
 
 template <class HANDLER>
 class CefBaseMultiHandler: public HANDLER {

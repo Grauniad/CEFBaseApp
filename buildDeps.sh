@@ -1,12 +1,11 @@
 #!/bin/bash
 
-#TODO
-#if [[ -e CPPWebSocketResponseRequestConfig.cmake ]]; then
-    #echo "Building dependencies..."
-#else
-    #echo "This script should be run in the home directory of the project"
-    #exit 1
-#fi
+if [[ -e CEFBaseAppConfig.cmake ]]; then
+    echo "Building dependencies..."
+else
+    echo "This script should be run in the home directory of the project"
+    exit 1
+fi
 
 if [[ "$1" == "" ]]; then
     DEPS_ROOT="$PWD/deps"

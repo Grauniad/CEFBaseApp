@@ -29,34 +29,35 @@ class DefaultTestLogger;
 
 class DummyCefApp: public CefBaseApp {
 public:
-    static DummyCefApp& Instance();
+    DummyCefApp(int argc, char** argv, std::string url);
 
-    virtual ~DummyCefApp() {}
-
-    /*
-     * Create a test to execute a standard function and add it to
-     * the internal list.
-     *
-     * IMPORTANT: for this to work this must point to a function loaded into
-     *            the same address in all (sub)processes...
-     *
-     */
-    void AddTest(const std::string& name, SimpleCefTest::TestFun* fptr);
+    virtual ~DummyCefApp() = default;
 
     /*
      * Execute all tests and return a suitable exit code for the application
      */
-    void RunTestsAndExit(int argc, char** argv);
+    static void RunTestsAndExit(CefRefPtr<DummyCefApp> app);
 
     CefRefPtr<CefTestJSHandler> JSHandler() { return jsHandler_; }
 
+    static void SetTestBrowser(CefRefPtr<CefBrowser> b);
+    static CefRefPtr<CefBrowser> GetTestBrowser();
+    struct NoTestBrowserConfigured {};
+    struct TestBrowserAlreadyConfigured {};
+
+    static void SetTestContext(CefRefPtr<CefV8Context> b);
+    static CefRefPtr<CefV8Context> GetTestContext();
+    struct NoTestContextConfigured {};
+    struct TestContextAlreadyConfigured {};
 private:
-    DummyCefApp();
+    static CefRefPtr<CefBrowser> testBrowser;
+    static CefRefPtr<CefV8Context> testContext;
 
     typedef std::shared_ptr<DummyCefAppHandlers> PointerType;
     PointerType handlers;
 
     CefRefPtr<CefTestJSHandler> jsHandler_;
+    CefMainArgs args;
 
 
 IMPLEMENT_REFCOUNTING(DummyCefApp);

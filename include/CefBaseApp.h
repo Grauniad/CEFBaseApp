@@ -13,6 +13,8 @@
 #include "CefBaseBrowserProcess.h"
 #include "CefBaseRendererProcess.h"
 #include "CefBaseClient.h"
+#include <CefBaseIPCExec.h>
+#include <atomic>
 
 /**
  * @title CEF Application
@@ -25,7 +27,7 @@
 class CefBaseApp: public CefApp {
 public:
     CefBaseApp();
-    virtual ~CefBaseApp();
+    virtual ~CefBaseApp() = default;
 
     /**********************************************************************
      *                         CEF APP
@@ -63,10 +65,23 @@ public:
 
     CefBaseClient& Client();
 
+    CefBaseIPCExec& IPC();
+
+    enum class ProcessId {
+        UNKNOWN,
+        BROWSER,
+        RENDERER
+    };
+    ProcessId CurrentProcess() const;
+    void SetProcessTypeRenderer();
+    void SetProcessTypeBrowser();
+
 private:
+    std::atomic<ProcessId>              procType_;
     CefRefPtr<CefBrowserProcessHandler> browser_;
     CefRefPtr<CefRenderProcessHandler>  renderer_;
     CefRefPtr<CefBaseClient>            client_;
+    std::shared_ptr<CefBaseIPCExec>     ipc_;
     IMPLEMENT_REFCOUNTING(CefBaseApp);
 };
 

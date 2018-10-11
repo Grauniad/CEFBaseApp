@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <memory>
+#include <iostream>
 
 #include "include/cef_task.h"
 
@@ -64,30 +65,56 @@ public:
         std::thread([=]() { this->Run();}).detach();
     }
 
+    struct UnsupportedIPCRequested {};
+
     template<class T, class TASK>
-    static T GetResultFromCEFThread(cef_thread_id_t tid, TASK&& task) {
-        CefRefPtr<Work<T,TASK>> work =
-            new CefBaseThread::Work<T,TASK>(std::move(task));
+    static T GetResultFromCEFThread(cef_thread_id_t tid, TASK task) {
+        if (CefCurrentlyOn(tid)) {
+            // We're already there - no need to get fancy...
+            return task();
+        } else {
+            CefRefPtr<Work<T, TASK>> work =
+                    new CefBaseThread::Work<T, TASK> (std::move(task));
 
-        CefPostTask(tid,base::Bind(&Work<T,TASK>::Execute,work));
-
-        return work->Result();
+            if ( CefPostTask(tid,base::Bind(&Work<T, TASK>::Execute,work))) {
+                return work->Result();
+            } else {
+                throw UnsupportedIPCRequested{};
+            }
+        }
     }
 
     template<class TASK>
-    static void PostToCEFThread(cef_thread_id_t tid, TASK task) {
+    static void PostToCEFThread(cef_thread_id_t tid, TASK task, int64 delayms = 0) {
         CefRefPtr<VoidWork<TASK>> work =
             new CefBaseThread::VoidWork<TASK>(std::move(task));
 
-        CefPostTask(tid,base::Bind(&VoidWork<TASK>::Execute,work));
+        bool posted = false;
+        if ( delayms > 0 ) {
+            posted = CefPostDelayedTask(tid,base::Bind(&VoidWork<TASK>::Execute,work), delayms);
+        } else {
+            posted = CefPostTask(tid,base::Bind(&VoidWork<TASK>::Execute,work));
+        }
+
+        if (!posted) {
+            throw UnsupportedIPCRequested{};
+        }
     }
 
     /**
      * Execute a task in the render process, and wait for the result...
      */
     template<class T, class TASK>
-    static T GetResultFromRender(TASK&& task) {
+    static T GetResultFromRender(TASK task) {
         return GetResultFromCEFThread<T,TASK>(TID_RENDERER,std::move(task));
+    }
+
+    /**
+     * Execute a task in the render process, and wait for the result...
+     */
+    template<class T, class TASK>
+    static T GetResultFromUI(TASK task) {
+        return GetResultFromCEFThread<T,TASK>(TID_UI,std::move(task));
     }
 
 protected:
@@ -100,7 +127,7 @@ protected:
     class Work: public CefBaseRefCounted
     {
     public:
-        Work(Function&& f): func(f) { }
+        Work(Function f): func(f) { }
 
         void Execute() { result.set_value(func()); }
 
@@ -116,7 +143,7 @@ protected:
     class VoidWork: public CefBaseRefCounted
     {
     public:
-        VoidWork(Function&& f): func(f) { }
+        VoidWork(Function f): func(f) { }
 
         void Execute() { func();}
 
@@ -138,7 +165,7 @@ public:
         function();
     }
 
-    static void StartInThread(F&& function) {
+    static void StartInThread(F function) {
         std::shared_ptr<CefBaseWorkerThread<F>> worker(
             new CefBaseWorkerThread(std::move(function)));
 
@@ -146,7 +173,7 @@ public:
     }
 
 private:
-    CefBaseWorkerThread(F&& function): function(function) { }
+    CefBaseWorkerThread(F function): function(function) { }
 
     CefBaseWorkerThread(const CefBaseWorkerThread& rhs) = delete;
 

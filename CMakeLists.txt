@@ -24,11 +24,12 @@ add_library(CEFBaseAppUtils STATIC
     include/CEFJSLogging.h
     include/CEFJSObject.h
     include/CEFJSUtils.h
+    include/CefBaseCookieMgr.h
     libUtils/CEFDOMSnapshot.cpp
     libUtils/CEFJSLogging.cpp
     libUtils/CEFJSObject.cpp
     libUtils/CEFJSUtils.cpp
-)
+    libUtils/CefBaseCookieMgr.cpp)
 
 target_link_libraries(CEFBaseAppUtils PUBLIC
     FixedJSON::FixedJSON
@@ -40,6 +41,7 @@ target_link_libraries(CEFBaseAppUtils PUBLIC
     Boost::boost
     OpenSSL::SSL
     OpenSSL::Crypto
+    ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
 )
 
 target_include_directories(CEFBaseAppUtils
@@ -55,6 +57,7 @@ set_property(TARGET CEFBaseAppUtils PROPERTY PUBLIC_HEADER
     ${CEFBaseApp_SOURCE_DIR}/include/CEFJSLogging.h
     ${CEFBaseApp_SOURCE_DIR}/include/CEFJSObject.h
     ${CEFBaseApp_SOURCE_DIR}/include/CEFJSUtils.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseCookieMgr.h
 )
 
 add_library(CEFBaseAppCore STATIC
@@ -62,6 +65,8 @@ add_library(CEFBaseAppCore STATIC
     include/CefBaseBrowserProcess.h
     include/CefBaseClient.h
     include/CefBaseDisplayHandler.h
+    include/CefBaseIPCExec.h
+    include/CefBaseIPCVia.h
     include/CefBaseJSHandler.h
     include/CefBaseJSMessageRouter.h
     include/CefBaseLifeSpanHandler.h
@@ -79,14 +84,16 @@ add_library(CEFBaseAppCore STATIC
     libBaseApp/CefBaseDisplayHandler.cpp
     libBaseApp/CefBaseJSHandler.cpp
     libBaseApp/CefBaseJSMessageRouter.cpp
+    libBaseApp/CefBaseIPCExec.cpp
+    libBaseApp/CefBaseIPCVia.cpp
     libBaseApp/CefBaseLifeSpanHandler.cpp
     libBaseApp/CefBaseLoadHandler.cpp
     libBaseApp/CefBaseMainLoop.cpp
     libBaseApp/CefBaseRendererProcess.cpp
     libBaseApp/CefBaseRenderHandler.cpp
     libBaseApp/CefBaseRequestHandler.cpp
-    libBaseApp/CefBaseRequestReplies.cpp
-)
+    libBaseApp/CefBaseRequestReplies.cpp)
+
 target_link_libraries(CEFBaseAppCore PUBLIC
     FixedJSON::FixedJSON
     ThreadComms::ThreadComms
@@ -112,6 +119,8 @@ set_property(TARGET CEFBaseAppCore PROPERTY PUBLIC_HEADER
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseBrowserProcess.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseClient.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseDisplayHandler.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseIPCExec.h
+    ${CEFBaseApp_SOURCE_DIR}/include/CefBaseIPCVia.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseJSHandler.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseJSMessageRouter.h
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLifeSpanHandler.h
@@ -154,10 +163,115 @@ set_property(TARGET CEFBaseAppDefaults PROPERTY PUBLIC_HEADER
     ${CEFBaseApp_SOURCE_DIR}/include/CefBaseLoadDefaultHandler.h
 )
 
+add_library(CefTestApp STATIC
+        include/CefTestApp.h
+        include/CefTestAppHandlers.h
+        include/CefTestClient.h
+        include/CefTestJSHandler.h
+        include/CefTests.h
+        include/CefTestJSBaseTest.h
+
+        libTest/CefTestApp.cpp
+        libTest/CefTestAppHandlers.cpp
+        libTest/CefTestClient.cpp
+        libTest/CefTestJSHandler.cpp
+        libTest/CefTests.cpp
+        libTest/CefTestJSBaseTest.cpp
+)
+
+target_link_libraries(CefTestApp PUBLIC CEFBaseAppDefaults UtilTime::Time)
+
+target_include_directories(CefTestApp
+        PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${CEF_INCLUDE_PATH}
+)
+
+set_property(TARGET CefTestApp PROPERTY PUBLIC_HEADER
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestApp.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestAppHandlers.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestClient.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestJSHandler.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTests.h
+        ${CEFBaseApp_SOURCE_DIR}/include/CefTestJSBaseTest.h
+)
+
+#
+# Test Configuration
+#
+find_package(GTest REQUIRED)
+
+add_executable(cookie test/cookie.cpp)
+COPY_FILES(cookie "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR_RELEASE}" ${CEFBaseApp_BINARY_DIR})
+COPY_FILES(cookie "${CEF_RESOURCE_FILES}" "${CEF_BINARY_DIR_RELEASE}" ${CEFBaseApp_BINARY_DIR})
+COPY_FILES(cookie "index.html" ${CEFBaseApp_SOURCE_DIR}/test  ${CEFBaseApp_BINARY_DIR})
+
+add_executable(threads test/threads.cpp)
+add_executable(ipc test/ipc.cpp)
+
+enable_testing()
+add_test(cookie cookie)
+add_test(threads threads)
+add_test(ipc ipc)
+
+target_link_libraries(cookie
+    PUBLIC
+        CefTestApp
+        ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
+        ${CEF_LIB_RELEASE}
+        ${CEF_STANDARD_LIBS}
+        GTest::GTest
+        stdc++fs
+)
+
+target_include_directories(cookie
+        PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${CEF_INCLUDE_PATH}
+    )
+
+target_link_libraries(threads
+        PUBLIC
+        CefTestApp
+        ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
+        ${CEF_LIB_RELEASE}
+        ${CEF_STANDARD_LIBS}
+        GTest::GTest
+)
+
+target_include_directories(threads
+        PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${CEF_INCLUDE_PATH}
+)
+
+target_link_libraries(ipc
+        PUBLIC
+        CefTestApp
+        ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
+        ${CEF_LIB_RELEASE}
+        ${CEF_STANDARD_LIBS}
+        GTest::GTest
+)
+
+target_include_directories(ipc
+        PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${CEF_INCLUDE_PATH}
+)
+
 #
 # Installation instructions
 #
-install(TARGETS       CEFBaseAppUtils CEFBaseAppCore CEFBaseAppDefaults
+install(TARGETS       CEFBaseAppUtils CEFBaseAppCore CEFBaseAppDefaults CefTestApp
         EXPORT        CEFBaseAppTargets
         ARCHIVE       DESTINATION lib
         INCLUDES      DESTINATION include
@@ -191,3 +305,18 @@ install (
     FILES       CEFBaseAppConfig.cmake
     DESTINATION lib/cmake/CEFBaseApp
 )
+
+#
+# Configure Coverage Build
+#
+SET(CMAKE_CXX_FLAGS_COVERAGE
+    "${GCC_DEBUG_FLAGS} -fprofile-arcs -ftest-coverage"
+    CACHE STRING "Flags used by the C++ compiler during coverage builds."
+    FORCE )
+SET(CMAKE_C_FLAGS_COVERAGE
+    "${GCC_DEBUG_FLAGS} -fprofile-arcs -ftest-coverage"
+    CACHE STRING "Flags used by the C compiler during coverage builds."
+    FORCE )
+MARK_AS_ADVANCED(
+    CMAKE_CXX_FLAGS_COVERAGE
+    CMAKE_C_FLAGS_COVERAGE)

@@ -10,6 +10,7 @@
 
 #include <include/cef_dom.h>
 #include <include/cef_frame.h>
+#include <memory>
 
 class CEFDOMSnapshot  {
 public:

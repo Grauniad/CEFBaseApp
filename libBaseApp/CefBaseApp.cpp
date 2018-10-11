@@ -5,18 +5,17 @@
  *      Author: lhumphreys
  */
 
+#include <CefBaseApp.h>
+
 #include "CefBaseApp.h"
 
 CefBaseApp::CefBaseApp()
-    : browser_(new CefBaseBrowserProcess),
+    : procType_(ProcessId::UNKNOWN),
+      browser_(new CefBaseBrowserProcess(*this)),
       renderer_(new CefBaseRendererProcess(*this)),
       client_(new CefBaseClient(this))
 {
-    // TODO Auto-generated constructor stub
-}
-
-CefBaseApp::~CefBaseApp() {
-    // TODO Auto-generated destructor stub
+    ipc_ = CefBaseIPCExec::Install(*this);
 }
 
 CefRefPtr<CefBrowserProcessHandler> CefBaseApp::GetBrowserProcessHandler() {
@@ -37,4 +36,20 @@ CefBaseBrowserProcess& CefBaseApp::Browser() {
 
 CefBaseClient& CefBaseApp::Client() {
     return static_cast<CefBaseClient&>(*client_.get());
+}
+
+CefBaseIPCExec& CefBaseApp::IPC() {
+    return *ipc_;
+}
+
+CefBaseApp::ProcessId CefBaseApp::CurrentProcess() const {
+    return procType_;
+}
+
+void CefBaseApp::SetProcessTypeRenderer() {
+    procType_= ProcessId::RENDERER;
+}
+
+void CefBaseApp::SetProcessTypeBrowser() {
+    procType_= ProcessId::BROWSER;
 }
