@@ -27,5 +27,3 @@ script:
   - ./buildFromDeps.sh
   - cd Build
   - xvfb-run make test
-  - cd ..
-  - ./CMakeUtils/travis/doCoverage.sh
