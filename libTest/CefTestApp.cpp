@@ -84,13 +84,13 @@ void DummyCefApp::SetTestBrowser(CefRefPtr<CefBrowser> b) {
         DummyCefApp::testBrowser = b;
     }
 }
+void DummyCefApp::ClearTestBrowser() {
+    DummyCefApp::testBrowser = nullptr;
+}
+
 
 void DummyCefApp::SetTestContext(CefRefPtr<CefV8Context> c) {
-    if (testContext.get()) {
-        throw TestContextAlreadyConfigured{};
-    } else {
-        testContext = c;
-    }
+    testContext = c;
 }
 
 CefRefPtr<CefV8Context> DummyCefApp::GetTestContext() {

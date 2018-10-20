@@ -42,13 +42,13 @@ public:
 
     static void SetTestBrowser(CefRefPtr<CefBrowser> b);
     static CefRefPtr<CefBrowser> GetTestBrowser();
+    static void ClearTestBrowser();
     struct NoTestBrowserConfigured {};
     struct TestBrowserAlreadyConfigured {};
 
     static void SetTestContext(CefRefPtr<CefV8Context> b);
     static CefRefPtr<CefV8Context> GetTestContext();
     struct NoTestContextConfigured {};
-    struct TestContextAlreadyConfigured {};
 private:
     static CefRefPtr<CefBrowser> testBrowser;
     static CefRefPtr<CefV8Context> testContext;

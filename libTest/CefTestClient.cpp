@@ -1,3 +1,4 @@
+#include <CefTestApp.h>
 #include "CefTestClient.h"
 #include "logger.h"
 #include "CefTestAppHandlers.h"
@@ -18,6 +19,7 @@ void DummyCefClient::OnAfterCreated(CefRefPtr<CefBrowser> _browser) {
         abort();
     }
     browser = _browser;
+    DummyCefApp::SetTestBrowser(browser);
 }
 
 
