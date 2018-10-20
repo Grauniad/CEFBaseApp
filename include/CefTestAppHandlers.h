@@ -53,6 +53,7 @@ private:
     int argc;
     char ** argv;
     static bool exitClean;
+    bool running;
     DummyCefApp& app;
 
 	IMPLEMENT_REFCOUNTING(DummyCefAppHandlers);

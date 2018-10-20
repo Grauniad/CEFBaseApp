@@ -47,7 +47,6 @@ public:
                      const std::string& value,
                      const CefBaseCookies::RemainingCookies& status)
         {
-            std::cout << ">> Got: " << name << std::endl;
             if (status != CefBaseCookies::RemainingCookies::NO_COOKIES) {
                 cookieString->append(name);
                 cookieString->append("=");
@@ -87,9 +86,7 @@ public:
         auto cookieString = std::make_shared<std::string>();
         std::shared_ptr<CefBaseIPCExec::IIPC_AsyncResult> sharedResult(result.release());
 
-        std::cout << "Requesting Map!" << std::endl;
         mgr->GetCookieMap(url, [=] (std::shared_ptr<const CefBaseCookies::CookieNameValueMap> cookies) -> void {
-            std::cout << "Got Map!" << std::endl;
             for (auto it = cookies->begin(); it != cookies->end(); ++it) {
                 const std::string& name = it->first;
                 const std::string& value = it->second;
