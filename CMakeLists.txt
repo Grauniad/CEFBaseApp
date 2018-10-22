@@ -15,6 +15,7 @@ find_package(UtilTime 0.1 REQUIRED)
 find_package(GTKUtils 0.1 REQUIRED)
 find_package(Boost 0.1 REQUIRED COMPONENTS system thread)
 find_package(WEBSOCKETPP 0.8.0 REQUIRED)
+find_package(CPPWebSocketResponseRequest 0.1 REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(CEF REQUIRED)
 
@@ -279,6 +280,7 @@ target_link_libraries(page_load
         ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
         ${CEF_LIB_RELEASE}
         ${CEF_STANDARD_LIBS}
+        CPPWebSocketResponseRequest::CPPWebSocketResponseRequest
         GTest::GTest
         )
 
