@@ -15,6 +15,7 @@ find_package(UtilTime 0.1 REQUIRED)
 find_package(GTKUtils 0.1 REQUIRED)
 find_package(Boost 0.1 REQUIRED COMPONENTS system thread)
 find_package(WEBSOCKETPP 0.8.0 REQUIRED)
+find_package(CPPWebSocketResponseRequest 0.1 REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(CEF REQUIRED)
 
@@ -211,10 +212,15 @@ COPY_FILES(cookie "index.html" ${CEFBaseApp_SOURCE_DIR}/test  ${CEFBaseApp_BINAR
 add_executable(threads test/threads.cpp)
 add_executable(ipc test/ipc.cpp)
 
+add_executable(page_load test/page_load.cpp)
+COPY_FILES(page_load "dummy.html" ${CEFBaseApp_SOURCE_DIR}/test  ${CEFBaseApp_BINARY_DIR})
+COPY_FILES(page_load "redirect.html" ${CEFBaseApp_SOURCE_DIR}/test  ${CEFBaseApp_BINARY_DIR})
+
 enable_testing()
 add_test(cookie cookie)
 add_test(threads threads)
 add_test(ipc ipc)
+add_test(page_load page_load)
 
 target_link_libraries(cookie
     PUBLIC
@@ -267,6 +273,24 @@ target_include_directories(ipc
         PRIVATE
         ${CEF_INCLUDE_PATH}
 )
+
+target_link_libraries(page_load
+        PUBLIC
+        CefTestApp
+        ${CEF_BINARY_DIR_RELEASE}/libcef_dll_wrapper.a
+        ${CEF_LIB_RELEASE}
+        ${CEF_STANDARD_LIBS}
+        CPPWebSocketResponseRequest::CPPWebSocketResponseRequest
+        GTest::GTest
+        )
+
+target_include_directories(page_load
+        PUBLIC
+        $<BUILD_INTERFACE:${CEFBaseApp_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${CEF_INCLUDE_PATH}
+        )
 
 #
 # Installation instructions

@@ -25,5 +25,6 @@ depList[websocketpp]=https://github.com/zaphoyd/websocketpp.git
 depList[Threads]=https://github.com/Grauniad/CPPThreadUtils.git
 depList[CEFDeps]=https://github.com/Grauniad/CEFDeps.git
 depList[GTKUtils]=https://github.com/Grauniad/GTKUtils.git
+depList[CPPWebSocketResponseRequest]=https://github.com/Grauniad/CPPWebSocketResponseRequest.git
 
 source $DEPS_ROOT/CMakeUtils/build_tools/buildDepsCommon.sh || exit 1
