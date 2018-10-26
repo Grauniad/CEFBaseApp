@@ -27,14 +27,6 @@ public:
 
     PageLoadHook()
     {
-        if (CefCurrentlyOn(TID_UI)) {
-            server.AddHandler(LoadedServer::SUB_NAME, std::make_shared<LoadedServer>());
-            serverThread.PostTask([&] () -> void {
-                server.HandleRequests(port);
-            });
-            serverThread.Start();
-            server.WaitUntilRunning();
-        }
     }
 
     /**
@@ -47,7 +39,7 @@ public:
         if (CefCurrentlyOn(TID_RENDERER)) {
             urlPub.Publish(frame->GetURL());
         } else if (CefCurrentlyOn(TID_UI)) {
-            urlSubPub->Publish(frame->GetURL());
+            WebPPPub().Publish(frame->GetURL());
         }
     }
 
@@ -68,12 +60,26 @@ public:
     };
 
     /**
-     * Creeat a new client ring buffer for receiving urls on the client thread
+     * Create a new client ring buffer for receiving urls on the client thread
      */
    std::shared_ptr<PipeSubscriber<std::string>> NewClient() {
         return urlPub.NewClient(1000);
     }
 private:
+    LoadedServer& WebPPPub() {
+        if (urlSubPub.get() == nullptr) {
+            urlSubPub = std::make_shared<LoadedServer>();
+            server.AddHandler(LoadedServer::SUB_NAME, urlSubPub);
+            serverThread.PostTask([&] () -> void {
+                server.HandleRequests(port);
+            });
+            serverThread.Start();
+            server.WaitUntilRunning();
+        }
+
+        return *urlSubPub;
+
+    }
     PipePublisher<std::string> urlPub;
     WorkerThread serverThread;
     RequestServer server;
