@@ -16,15 +16,13 @@ CefBaseRenderHandler::~CefBaseRenderHandler() {
     // TODO Auto-generated destructor stub
 }
 
-bool CefBaseRenderHandler::GetViewRect(
+void CefBaseRenderHandler::GetViewRect(
     CefRefPtr<CefBrowser> browser,
     CefRect& rect)
 {
-    bool found = false;
     for (PointerType& handler: handlers) {
-        found |= handler->GetViewRect(browser,rect);
+         handler->GetViewRect(browser,rect);
     }
-    return found;
 }
 
 void CefBaseRenderHandler::OnPaint(

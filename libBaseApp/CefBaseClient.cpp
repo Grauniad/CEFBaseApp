@@ -50,6 +50,7 @@ CefBaseLifeSpanHandler& CefBaseClient::LifeSpanHandler() {
 
 bool CefBaseClient::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message)
 {
@@ -58,6 +59,7 @@ bool CefBaseClient::OnProcessMessageReceived(
     for (MessageHandlerPtrType& handler : messageHandlers_) {
         handled = handler->OnProcessMessageReceived(
             browser,
+            frame,
             source_process,
             message);
     }

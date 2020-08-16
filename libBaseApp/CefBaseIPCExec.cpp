@@ -79,6 +79,7 @@ std::shared_ptr<CefBaseIPCExec> CefBaseIPCExec::Install(CefBaseApp& app)
 }
 
 bool CefBaseIPCExec::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                              CefRefPtr<CefFrame> frame,
                                               CefProcessId source_process,
                                               CefRefPtr<CefProcessMessage> message) {
     bool handled = false;
@@ -163,10 +164,10 @@ void CefBaseIPCExec::Execute(const cef_process_id_t& target,
         // SendProcessMessage
         if (postThread == TID_RENDERER) {
             CefBaseThread::PostToCEFThread(TID_RENDERER, [=] () {
-                browser->SendProcessMessage(target, message);
+                browser->GetMainFrame()->SendProcessMessage(target, message);
             });
         } else {
-            browser->SendProcessMessage(target, message);
+            browser->GetMainFrame()->SendProcessMessage(target, message);
         }
     }
 }
@@ -183,7 +184,7 @@ void CefBaseIPCExec::SetResult(CefRefPtr<CefBrowser> browser,
     args->SetSize(2);
     args->SetInt(0, hdl);
     args->SetString(1, std::move(result));
-    browser->SendProcessMessage(target, reply);
+    browser->GetMainFrame()->SendProcessMessage(target, reply);
 }
 
 CefBaseIPCExec::StoredCallbacks::StoredCallbacks()

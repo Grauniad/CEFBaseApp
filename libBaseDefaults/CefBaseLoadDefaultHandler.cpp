@@ -8,6 +8,7 @@
 
 #include "CefBaseLoadDefaultHandler.h"
 #include "include/wrapper/cef_helpers.h"
+#include "include/cef_parser.h"
 
 void CefBaseLoadDefaultHandler::OnLoadError(
 		CefRefPtr<CefBrowser> browser,
@@ -19,8 +20,9 @@ void CefBaseLoadDefaultHandler::OnLoadError(
     if (CefCurrentlyOn(TID_UI))
     {
         // Don't display an error for downloaded files.
-        if (errorCode == ERR_ABORTED)
+        if (errorCode == ERR_ABORTED) {
             return;
+        }
 
         // Display a load error message.
         std::stringstream ss;
@@ -28,6 +30,7 @@ void CefBaseLoadDefaultHandler::OnLoadError(
                 "<h2>Failed to load URL " << std::string(failedUrl) <<
                 " with error " << std::string(errorText) << " (" << errorCode <<
                 ").</h2></body></html>";
-        frame->LoadString(ss.str(), failedUrl);
+        CefString raw = ss.str();
+        frame->LoadURL(CefURIEncode(raw, false));
     }
 }

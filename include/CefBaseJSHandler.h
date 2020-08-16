@@ -56,6 +56,7 @@ public:
      */
     bool OnProcessMessageReceived(
         CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
         CefProcessId source_process,
         CefRefPtr<CefProcessMessage> message);
 
@@ -131,6 +132,7 @@ private:
     ///
     bool OnBrowserProcessMessageReceived(
         CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
         CefProcessId source_process,
         CefRefPtr<CefProcessMessage> message);
 
@@ -140,6 +142,7 @@ private:
     ///
     bool OnRendererProcessMessageReceived(
         CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
         CefProcessId source_process,
         CefRefPtr<CefProcessMessage> message);
 

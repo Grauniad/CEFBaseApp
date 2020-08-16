@@ -31,6 +31,7 @@ public:
      ***********************************************************************/
 
     bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<CefFrame> frame,
                                   CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) override;
 
@@ -43,7 +44,7 @@ public:
     // coordinates. Return true if the rectangle was provided.
     ///
     /*--cef()--*/
-    virtual bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect);
+    virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect);
 
     ///
     // Called when an element should be painted. |type| indicates whether the

@@ -29,6 +29,7 @@ void DummyCefClient::OnBeforeClose(CefRefPtr<CefBrowser> _browser) {
 
 bool DummyCefClient::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message)
 {
@@ -44,7 +45,6 @@ bool DummyCefClient::OnProcessMessageReceived(
     return handled;
 }
 
-bool DummyCefClient::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
-    return true;
+void DummyCefClient::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
+    rect = CefRect{1, 1, 100, 100};
 }
-

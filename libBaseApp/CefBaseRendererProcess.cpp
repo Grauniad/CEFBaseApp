@@ -32,6 +32,7 @@ void CefBaseRendererProcess::OnContextReleased(
 
 bool CefBaseRendererProcess::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message)
 {
@@ -41,7 +42,7 @@ bool CefBaseRendererProcess::OnProcessMessageReceived(
           ++it)
     {
         auto handler = *it;
-        handler.get()->OnProcessMessageReceived(browser,source_process,message);
+        handler.get()->OnProcessMessageReceived(browser,frame, source_process,message);
     }
 
     return handled;

@@ -29,9 +29,9 @@ public:
      * Event: Request for view rectange of the browser
      *
      * Called to retrieve the view rectangle which is relative to screen
-     * coordinates. Return true if the rectangle was provided.
+     * coordinates.
      */
-    virtual bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect);
+    virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect);
 
     /*--cef()--*/
     /**

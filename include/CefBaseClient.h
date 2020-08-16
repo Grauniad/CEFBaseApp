@@ -66,10 +66,11 @@ public:
      * @returns TRUE if the message was handled by at least one of the handlers,
      *          false otherwise.
      */
-    virtual bool OnProcessMessageReceived(
+    bool OnProcessMessageReceived(
         CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
         CefProcessId source_process,
-        CefRefPtr<CefProcessMessage> message);
+        CefRefPtr<CefProcessMessage> message) override;
 
 
     /**********************************************************************

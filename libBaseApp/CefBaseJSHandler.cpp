@@ -89,11 +89,13 @@ void CefBaseJSHandler::InstallHandler(CefBaseApp& app) {
 
         bool OnProcessMessageReceived(
             CefRefPtr<CefBrowser> browser,
+            CefRefPtr<CefFrame> frame,
             CefProcessId source_process,
             CefRefPtr<CefProcessMessage> message) OVERRIDE
         {
             return jsHandler->OnProcessMessageReceived(
                 browser,
+                frame,
                 source_process,
                 message);
         }
@@ -110,11 +112,13 @@ void CefBaseJSHandler::InstallHandler(CefBaseApp& app) {
 
         bool OnProcessMessageReceived(
             CefRefPtr<CefBrowser> browser,
+            CefRefPtr<CefFrame> frame,
             CefProcessId source_process,
             CefRefPtr<CefProcessMessage> message) OVERRIDE
         {
             return jsHandler->OnProcessMessageReceived(
                 browser,
+                frame,
                 source_process,
                 message);
         }
@@ -163,6 +167,7 @@ void CefBaseJSHandler::OnBeforeBrowse(
 
 bool CefBaseJSHandler::OnBrowserProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message)
 {
@@ -173,6 +178,7 @@ bool CefBaseJSHandler::OnBrowserProcessMessageReceived(
     {
         handled = router_->GetBrowserSideRouter()->OnProcessMessageReceived(
             browser,
+            frame,
             source_process,
             message);
     }
@@ -207,6 +213,7 @@ void CefBaseJSHandler::OnContextReleased(
 
 bool CefBaseJSHandler::OnRendererProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message)
 {
@@ -216,6 +223,7 @@ bool CefBaseJSHandler::OnRendererProcessMessageReceived(
     {
         handled = router_->GetRendererSideRouter()->OnProcessMessageReceived(
             browser,
+            frame,
             source_process,
             message);
     }
@@ -225,6 +233,7 @@ bool CefBaseJSHandler::OnRendererProcessMessageReceived(
 
 bool CefBaseJSHandler::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message)
 {
@@ -232,11 +241,13 @@ bool CefBaseJSHandler::OnProcessMessageReceived(
     if (CefCurrentlyOn(TID_RENDERER)) {
         handled = OnRendererProcessMessageReceived(
             browser,
+            frame,
             source_process,
             message);
     } else if (CefCurrentlyOn(TID_UI)) {
         handled = OnBrowserProcessMessageReceived(
             browser,
+            frame,
             source_process,
             message);
     }

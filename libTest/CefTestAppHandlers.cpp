@@ -56,6 +56,7 @@ void DummyCefAppHandlers::OnContextInitialized() {
         app.GetClient().get(),
         url,
         browser_settings,
+        NULL,
         NULL);
 }
 
@@ -97,7 +98,7 @@ void DummyCefAppHandlers::OnContextCreated(
                 CefBaseThread::GetResultFromRender<int>([=] () {
                     CefRefPtr<CefProcessMessage> msg =
                             CefProcessMessage::Create("ABORT");
-                    browser->SendProcessMessage(PID_BROWSER,msg);
+                    browser->GetMainFrame()->SendProcessMessage(PID_BROWSER,msg);
                     return 0;
                 });
             } else {
@@ -105,7 +106,7 @@ void DummyCefAppHandlers::OnContextCreated(
                 CefBaseThread::GetResultFromRender<int>([=] () {
                     CefRefPtr<CefProcessMessage> msg =
                             CefProcessMessage::Create("EXIT");
-                    browser->SendProcessMessage(PID_BROWSER,msg);
+                    browser->GetMainFrame()->SendProcessMessage(PID_BROWSER,msg);
                     return 0;
                 });
             }
